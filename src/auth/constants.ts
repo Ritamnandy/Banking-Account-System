@@ -44,8 +44,11 @@ const ResetPasswordLink = ( token: string, email: string ) =>
     return `${ process.env.FONTEND_RESET_PASSWORD_URL as string }?token=${ token }&email=${ encodeURIComponent( email ) }`;
 };
 
+const ACCESS_TOKEN_COOKIE_NAME = 'accessToken';
+
 export
 { 
+    ACCESS_TOKEN_COOKIE_NAME,
     ResetPasswordLink,
     comparePassword,
     getOtp,

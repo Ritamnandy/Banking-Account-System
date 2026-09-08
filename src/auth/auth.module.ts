@@ -6,9 +6,11 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AuthRepository } from './aut.repository.js';
 import { AuthguardsGuard } from './authguards/authguards.guard.js';
+import { RedisModule } from '../redis/redis.module.js';
+import { MailModule } from '../mail/mail.module.js';
 
 @Module( {
-  imports: [ PrismaModule ],
+  imports: [ PrismaModule, RedisModule, MailModule ],
   providers: [ AuthService, JwtService, ConfigService, AuthRepository, AuthguardsGuard ],
   controllers: [ AuthController ],
   exports: [ AuthguardsGuard ]
