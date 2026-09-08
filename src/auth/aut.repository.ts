@@ -106,7 +106,7 @@ export class AuthRepository
         try
         {
 
-            await this.prisma.user.findUnique( {
+          return  await this.prisma.user.findUnique( {
                 where: {
                     email
                 },
