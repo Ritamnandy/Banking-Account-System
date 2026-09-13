@@ -8,6 +8,7 @@ import { MailModule } from './mail/mail.module.js';
 import { JwtModule } from '@nestjs/jwt';
 import { BullModule } from '@nestjs/bullmq';
 import type { RedisService } from './redis/redis.service.js';
+import { AccountsModule } from './accounts/accounts.module.js';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -34,7 +35,11 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
 
 
-    MailModule
+    MailModule,
+
+
+
+    AccountsModule
   ],
   controllers: [],
   providers: [],
