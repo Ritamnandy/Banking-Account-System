@@ -1,0 +1,134 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  BANNED
+}
+
+model User {
+  userId       String     @id @default(cuid()) @map("user_id")
+  firstName    String     @map("first_name") @db.VarChar(30)
+  lastName     String     @map("last_name") @db.VarChar(30)
+  email        String     @unique @map("email") @db.VarChar(100)
+  password     String     @map("password") @db.VarChar(255)
+  refreshToken String?    @unique @map("refresh_token") @db.VarChar(255)
+  status       UserStatus @default(ACTIVE) @map("status")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  customers    Customer?
+
+  @@map("users")
+}
+
+model Customer {
+  customerId  String     @id @default(cuid()) @map("customer_id")
+  user_id     String     @unique @map("user_id")
+  User        User       @relation(fields: [user_id], references: [userId], onDelete: Cascade, onUpdate: Cascade)
+  name        String     @map("name") @db.VarChar(100)
+  email       String     @unique @map("email") @db.VarChar(100)
+  phone       String?    @map("phone_no") @db.VarChar(10)
+  dateOfBirth DateTime   @map("date_of_birth")
+  status      UserStatus @default(ACTIVE) @map("status")
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+  accounts    Accounts[]
+
+  @@index([user_id], name: "idx_user_id")
+  @@index([dateOfBirth], name: "idx_date_of_birth")
+  @@map("customers")
+}
+
+enum AccountStatus {
+  ACTIVE
+  INACTIVE
+  CLOSED
+}
+
+enum AccountType {
+  SAVINGS
+  CHECKING
+  CREDIT
+  LOAN
+}
+
+model Accounts {
+  accountId   String        @id @default(cuid()) @map("account_id")
+  customerId  String        @map("customer_id")
+  Customer    Customer      @relation(fields: [customerId], references: [customerId], onDelete: Cascade, onUpdate: Cascade)
+  accountType AccountType   @map("account_type")
+  status      AccountStatus @default(ACTIVE) @map("status")
+  balance     Decimal       @default(0) @map("balance") @db.Decimal(19, 4)
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  transactionEntries Transaction_Entry[]
+
+  @@index([customerId], name: "idx_customer_id")
+  @@index([accountType], name: "idx_account_type")
+  @@index([status], name: "idx_status")
+  @@map("accounts")
+}
+
+enum TransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  TRANSFER
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REVERSED
+}
+
+model Transaction {
+  transactionId         String            @id @default(cuid()) @map("transaction_id")
+  transaction_reference String            @unique @map("transaction_reference") @db.VarChar(100)
+  amount                Decimal           @map("amount") @db.Decimal(19, 4)
+  transactionType       TransactionType   @map("transaction_type")
+  transactionStatus     TransactionStatus @map("transaction_status")
+  description           String?           @map("description") @db.VarChar(255)
+
+  createdAt          DateTime           @default(now()) @map("created_at")
+  updatedAt          DateTime           @updatedAt @map("updated_at")
+  transactionEntries Transaction_Entry[]
+
+  @@index([transactionType], name: "idx_transaction_type")
+  @@index([transactionStatus], name: "idx_transaction_status")
+  @@map("transactions")
+}
+
+enum TransactionEntryType {
+  DEBIT
+  CREDIT
+}
+
+model Transaction_Entry {
+  transactionEntryId String               @id @default(cuid()) @map("transaction_entry_id")
+  transactionId      String                @map("transaction_id")
+  Transaction        Transaction          @relation(fields: [transactionId], references: [transactionId], onDelete: Cascade, onUpdate: Cascade)
+  accountId          String                @map("account_id")
+  Accounts           Accounts             @relation(fields: [accountId], references: [accountId], onDelete: Cascade, onUpdate: Cascade)
+  entryType          TransactionEntryType @map("entry_type")
+  ammount            Decimal              @map("amount") @db.Decimal(19, 4)
+  createdAt          DateTime             @default(now()) @map("created_at")
+
+  @@index([entryType], name: "idx_entry_type")
+  @@index([transactionId], name: "idx_transaction_id")
+  @@index([accountId], name: "idx_account_id")
+  @@map("transaction_entries")
+}
