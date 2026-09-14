@@ -26,6 +26,7 @@ export class AccountsController
   }
 
   @Post( 'accountId' )
+  @HttpCode( HttpStatus.OK )
   async setBalance ( @Param( 'accountId' ) accountId: string, @Body() setBallanceDto: SetBallanceDto )
   {
     const response = await this.accountsService.setBalance( accountId, setBallanceDto.balance );
@@ -36,6 +37,7 @@ export class AccountsController
   }
 
   @Post( ':accountId' )
+  @HttpCode( HttpStatus.OK )
   async withDrawBalance ( @Param( 'accountId' ) accountId: string, @Body() BallanceDto: SetBallanceDto )
   {
     const response = await this.accountsService.withDrawBalance( accountId, BallanceDto.balance );
@@ -46,6 +48,7 @@ export class AccountsController
   }
 
   @Get( ':accountId' )
+  @HttpCode( HttpStatus.OK )
   async getAccount ( @Param( 'accountId' ) accountId: string )
   {
     const response = await this.accountsService.getAccountStatus( accountId );
@@ -55,12 +58,24 @@ export class AccountsController
     }
   }
 
-  @Delete( ':accountId' )
-  async remove ( @Param( 'accountId' ) accountId: string )
+  @Post( ':accountId' )
+  @HttpCode( HttpStatus.OK )  
+  async disableAccount ( @Param( 'accountId' ) accountId: string )
   {
     const respose = await this.accountsService.disibleAccount( accountId );
     return {
       message: 'Account disabled successfully',
+      data: respose
+    }
+  }
+
+  @Post( ':accountId' )
+  @HttpCode( HttpStatus.OK )  
+  async enableAccount ( @Param( 'accountId' ) accountId: string )
+  {
+    const respose = await this.accountsService.enableAccount( accountId );
+    return {
+      message: 'Account enabled successfully',
       data: respose
     }
   }
