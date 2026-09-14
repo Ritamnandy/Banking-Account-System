@@ -49,6 +49,7 @@ CREATE TABLE "customers" (
 -- CreateTable
 CREATE TABLE "accounts" (
     "account_id" TEXT NOT NULL,
+    "account_number" VARCHAR(20) NOT NULL,
     "customer_id" TEXT NOT NULL,
     "account_type" "AccountType" NOT NULL,
     "status" "AccountStatus" NOT NULL DEFAULT 'ACTIVE',
@@ -102,6 +103,9 @@ CREATE INDEX "idx_user_id" ON "customers"("user_id");
 
 -- CreateIndex
 CREATE INDEX "idx_date_of_birth" ON "customers"("date_of_birth");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "accounts_account_number_key" ON "accounts"("account_number");
 
 -- CreateIndex
 CREATE INDEX "idx_customer_id" ON "accounts"("customer_id");

@@ -66,7 +66,7 @@ enum AccountType {
 
 model Accounts {
   accountId     String        @id @default(cuid()) @map("account_id")
-  accountNumber String        @map("account_number") @db.VarChar(20)
+  accountNumber String        @unique @map("account_number") @db.VarChar(20)
   customerId    String        @map("customer_id")
   Customer      Customer      @relation(fields: [customerId], references: [customerId], onDelete: Cascade, onUpdate: Cascade)
   accountType   AccountType   @map("account_type")
