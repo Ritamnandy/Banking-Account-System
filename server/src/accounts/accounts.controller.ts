@@ -1,34 +1,68 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, HttpCode, HttpStatus } from '@nestjs/common';
 import { AccountsService } from './accounts.service.js';
 import { CreateAccountDto } from './dto/create-account.dto.js';
-import { UpdateAccountDto } from './dto/update-account.dto.js';
 
-@Controller('accounts')
-export class AccountsController {
-  constructor(private readonly accountsService: AccountsService) {}
+import { AuthguardsGuard } from '../auth/authguards/authguards.guard.js';
+import { SetBallanceDto } from './dto/setBallance.dto.js';
 
-  @Post()
-  create(@Body() createAccountDto: CreateAccountDto) {
-    return this.accountsService.create(createAccountDto);
+
+@Controller( 'accounts' )
+@UseGuards( AuthguardsGuard )
+export class AccountsController
+{
+  constructor ( private readonly accountsService: AccountsService ) { }
+
+  @Post( ':customerId' )
+  @HttpCode( HttpStatus.CREATED )
+  async create (
+    @Body() createAccountDto: CreateAccountDto,
+    @Param( 'customerId' ) customerId: string )
+  {
+    const response = await this.accountsService.create( createAccountDto, customerId );
+    return {
+      message: 'Account created successfully',
+      data: response
+    }
   }
 
-  @Get()
-  findAll() {
-    return this.accountsService.findAll();
+  @Post( 'accountId' )
+  async setBalance ( @Param( 'accountId' ) accountId: string, @Body() setBallanceDto: SetBallanceDto )
+  {
+    const response = await this.accountsService.setBalance( accountId, setBallanceDto.balance );
+    return {
+      message: 'Balance set successfully',
+      data: response
+    }
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.accountsService.findOne(+id);
+  @Post( ':accountId' )
+  async withDrawBalance ( @Param( 'accountId' ) accountId: string, @Body() BallanceDto: SetBallanceDto )
+  {
+    const response = await this.accountsService.withDrawBalance( accountId, BallanceDto.balance );
+    return {
+      message: 'Balance withdrawn successfully',
+      data: response
+    }
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAccountDto: UpdateAccountDto) {
-    return this.accountsService.update(+id, updateAccountDto);
+  @Get( ':accountId' )
+  async getAccount ( @Param( 'accountId' ) accountId: string )
+  {
+    const response = await this.accountsService.getAccountStatus( accountId );
+    return {
+      message: 'Account status retrieved successfully',
+      data: response
+    }
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.accountsService.remove(+id);
+  @Delete( ':accountId' )
+  async remove ( @Param( 'accountId' ) accountId: string )
+  {
+    const respose = await this.accountsService.disibleAccount( accountId );
+    return {
+      message: 'Account disabled successfully',
+      data: respose
+    }
   }
+
 }

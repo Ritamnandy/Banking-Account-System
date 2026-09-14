@@ -43,14 +43,16 @@ export class AccountsService
     return this.accountRepository.withDrawBlance( accountId, amount )
   }
 
-  async disibleAccount(accountId: string)
+  async disibleAccount ( accountId: string )
   {
-    return this.accountRepository.disableAccount(accountId)
+    await this.redisService.delete( `account:${ accountId }:status` )
+    return this.accountRepository.disableAccount( accountId )
   }
 
-  async enableAccount(accountId: string)
+  async enableAccount ( accountId: string )
   {
-    return this.accountRepository.enableAccount(accountId)
+    await this.redisService.delete( `account:${ accountId }:status` )
+    return this.accountRepository.enableAccount( accountId )
   }
 
 }
