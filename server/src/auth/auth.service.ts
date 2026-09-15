@@ -10,13 +10,14 @@ import type { JwtPayLoad, RefreshTokenPayload } from './types/payload.types.js';
 import { StringValue } from 'ms';
 import { ResendOtpDto } from './dto/resendotp.dto.js';
 import { LoginDto } from './dto/login.dto.js';
-import type { ResetPasswordDto } from './dto/resetPassword.dto.js';
-import type { AuthRepository } from '../repositories/auth.repository.js';
+import { ResetPasswordDto } from './dto/resetPassword.dto.js';
+import { AuthRepository } from '../repositories/auth.repository.js';
+import { Role } from '../Types/types.js';
 @Injectable()
 export class AuthService
 {
     private readonly logger = new Logger( AuthService.name );
- 
+
     constructor (
         private readonly configService: ConfigService,
         private readonly jwtService: JwtService,
@@ -30,7 +31,8 @@ export class AuthService
             id: payload.id,
             email: payload.email,
             firstName: payload.firstName,
-            lastName: payload.lastName
+            lastName: payload.lastName,
+            role: payload.role
         }
         const refresh: RefreshTokenPayload = {
             id: payload.id,
@@ -144,7 +146,8 @@ export class AuthService
             id: createdUser.userId,
             email: createdUser.email,
             firstName: createdUser.firstName,
-            lastName: createdUser.lastName
+            lastName: createdUser.lastName,
+            role: createdUser.role as Role
         } )
         const { accessToken, refreshToken } = await this.genarateTokenPair( jwt, refresh )
         await this.redisService.delete( signupKey( data.email ) )
@@ -152,7 +155,13 @@ export class AuthService
         this.logger.log( `User verified and created ${ data.email }` )
         return {
             message: 'User verified and created successfully',
-            user: createdUser,
+            user: {
+                userId: createdUser.userId,
+                email: createdUser.email,
+                firstName: createdUser.firstName,
+                lastName: createdUser.lastName,
+
+            },
             accessToken: accessToken,
             refreshToken: refreshToken
         }
@@ -174,7 +183,8 @@ export class AuthService
             id: existingUser.userId,
             email: existingUser.email,
             firstName: existingUser.firstName,
-            lastName: existingUser.lastName
+            lastName: existingUser.lastName,
+            role: existingUser.role as Role
         } )
         const { accessToken, refreshToken } = await this.genarateTokenPair( jwt, refresh )
         this.logger.log( `User logged in ${ data.email }` )
@@ -219,7 +229,8 @@ export class AuthService
             id: user.userId,
             email: user.email,
             firstName: user.firstName,
-            lastName: user.lastName
+            lastName: user.lastName,
+            role: user.role as Role
         } )
         const { accessToken, refreshToken: newRefreshToken } = await this.genarateTokenPair( jwt, refresh )
         this.logger.log( `User refreshed access token ${ user.email }` )
