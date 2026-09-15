@@ -17,6 +17,10 @@ enum UserStatus {
   INACTIVE
   BANNED
 }
+enum Role {
+  USER
+  ADMIN
+}
 
 model User {
   userId       String     @id @default(cuid()) @map("user_id")
@@ -26,6 +30,7 @@ model User {
   password     String     @map("password") @db.VarChar(255)
   refreshToken String?    @unique @map("refresh_token") @db.VarChar(255)
   status       UserStatus @default(ACTIVE) @map("status")
+  role         Role       @default(USER) @map("role")
   createdAt    DateTime   @default(now()) @map("created_at")
   updatedAt    DateTime   @updatedAt @map("updated_at")
   customers    Customer?
