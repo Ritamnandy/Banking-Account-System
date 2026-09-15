@@ -3,7 +3,6 @@ import { RedisService } from '../redis/redis.service.js';
 import { MailService } from '../mail/mail.service.js';
 import { RegisterDto } from './dto/register.dto.js';
 import { comparePassword, getOtp, hashPassword, otpKey, signupKey, rawToken, hashToken, ResetPasswordLink, resetTokenKey } from './constants.js';
-import { AuthRepository } from './aut.repository.js';
 import { ConfigService } from '@nestjs/config';
 import { JsonWebTokenError, JwtService, NotBeforeError, TokenExpiredError } from '@nestjs/jwt';
 import { VerifyEmail } from './dto/verifyEmail.dto.js';
@@ -12,11 +11,12 @@ import { StringValue } from 'ms';
 import { ResendOtpDto } from './dto/resendotp.dto.js';
 import { LoginDto } from './dto/login.dto.js';
 import type { ResetPasswordDto } from './dto/resetPassword.dto.js';
+import type { AuthRepository } from '../repositories/auth.repository.js';
 @Injectable()
 export class AuthService
 {
     private readonly logger = new Logger( AuthService.name );
-
+ 
     constructor (
         private readonly configService: ConfigService,
         private readonly jwtService: JwtService,
