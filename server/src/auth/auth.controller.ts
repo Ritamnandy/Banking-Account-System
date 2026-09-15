@@ -1,14 +1,14 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service.js';
-import type { RegisterDto } from './dto/register.dto.js';
-import type { VerifyEmail } from './dto/verifyEmail.dto.js';
-import type { LoginDto } from './dto/login.dto.js';
+import  { RegisterDto } from './dto/register.dto.js';
+import  { VerifyEmail } from './dto/verifyEmail.dto.js';
+import  { LoginDto } from './dto/login.dto.js';
 import type { Response } from 'express';
-import type { ResendOtpDto } from './dto/resendotp.dto.js';
-import type { RefreshTokenDto } from './dto/refreshtoken.dto.js';
-import type { AuthenticatedRequest } from './types/authenticated-request..types.js';
-import type { ResetPasswordDto } from './dto/resetPassword.dto.js';
-import { AuthguardsGuard } from './authguards/authguards.guard.js';
+import  { ResendOtpDto } from './dto/resendotp.dto.js';
+import  { RefreshTokenDto } from './dto/refreshtoken.dto.js';
+import  type { AuthenticatedRequest } from './types/authenticated-request..types.js';
+import  { ResetPasswordDto } from './dto/resetPassword.dto.js';
+
 
 @Controller( 'auth' )
 export class AuthController
@@ -36,10 +36,13 @@ export class AuthController
       path: '/auth/refresh', // scope it — only sent on the refresh endpoint, reduces exposure
     });
   }
+    
     constructor ( private readonly authService: AuthService )
     { 
         
     }
+
+
     @Post( 'register' )
         @HttpCode( HttpStatus.ACCEPTED )
     async registerUser (@Body() data: RegisterDto )
@@ -134,16 +137,6 @@ export class AuthController
 
  
 
-    @Get('profile')
-    @HttpCode( HttpStatus.OK )
-    @UseGuards(AuthguardsGuard)
-    async getUserProfile (@Req() req: AuthenticatedRequest)
-    {
-        const user = await this.authService.getCurrentUser(req.user.id);
-        return {
-            message: 'User profile retrieved successfully',
-            user,
-        };
-    }
+
 
 }
