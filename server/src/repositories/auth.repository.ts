@@ -2,8 +2,10 @@
 import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service.js';
 import { PrismaClientKnownRequestError, PrismaClientValidationError } from '../../generated/prisma/internal/prismaNamespace.js';
-import type { RegisterDto } from '../auth/dto/register.dto.js';
- 
+import { RegisterDto } from '../auth/dto/register.dto.js';
+import { Role, UserStatus } from '../Types/types.js';
+
+
 
 @Injectable()
 export class AuthRepository
@@ -16,11 +18,11 @@ export class AuthRepository
     private readonly SelectedOption = {
         userId: true,
         firstName: true,
-        lastName: true, 
+        lastName: true,
         email: true,
         createdAt: true,
         updatedAt: true,
-    }; 
+    };
 
 
     private handleError ( error: unknown, context: string, notFoundMsg: string = "Resource not found" ): never
@@ -68,14 +70,38 @@ export class AuthRepository
         try
         {
 
-            return await this.prisma.user.create( {
-                data: { ...data },
-                omit: {
-                    password: true,
-                    refreshToken: true,
-                    status: true
-                }
-            } )
+            if ( !data.role )
+            {
+                return await this.prisma.user.create( {
+                    data: {
+                        firstName: data.firstName,
+                        lastName: data.lastName,
+                        email: data.email,
+                        password: data.password
+                    },
+                    omit: {
+                        password: true,
+                        refreshToken: true,
+                        status: true
+                    }
+                } )
+            } else
+            {
+                return await this.prisma.user.create( {
+                    data: {
+                        firstName: data.firstName,
+                        lastName: data.lastName,
+                        email: data.email,
+                        password: data.password,
+                        role: data.role
+                    },
+                    omit: {
+                        password: true,
+                        refreshToken: true,
+                        status: true
+                    }
+                } )
+            }
 
 
         } catch ( error )
@@ -89,7 +115,7 @@ export class AuthRepository
         try
         {
 
-           return await this.prisma.user.findUnique( {
+            return await this.prisma.user.findUnique( {
                 where: {
                     userId
                 },
@@ -107,7 +133,7 @@ export class AuthRepository
         try
         {
 
-          return  await this.prisma.user.findUnique( {
+            return await this.prisma.user.findUnique( {
                 where: {
                     email
                 },
@@ -155,7 +181,7 @@ export class AuthRepository
     {
         try
         {
-           return await this.prisma.user.findUnique( {
+            return await this.prisma.user.findUnique( {
                 where: { email }
             } )
         } catch ( error )
@@ -176,6 +202,58 @@ export class AuthRepository
         } catch ( error )
         {
             this.handleError( error, 'setPassword' )
+        }
+    }
+
+    async updateRole ( userId: string, role: Role )
+    {
+        try
+        {
+            return await this.prisma.user.update( {
+                where: { userId },
+                data: { role }
+            } )
+        } catch ( error )
+        {
+            this.handleError( error, 'updateRole' )
+        }
+    }
+
+    async updateStatus ( userId: string, status: UserStatus )
+    {
+        try
+        {
+            return await this.prisma.user.update( {
+                where: { userId },
+                data: { status }
+            } )
+        } catch ( error )
+        {
+            this.handleError( error, 'updateStatus' )
+        }
+    }
+
+    async deleteUser ( userId: string )
+    {
+        try
+        {
+            return await this.prisma.user.delete( {
+                where: { userId }
+            } )
+        } catch ( error )
+        {
+            this.handleError( error, 'deleteUser' )
+        }
+    }
+
+    async getAllUsers ()
+    {
+        try
+        {
+            return await this.prisma.user.findMany()
+        } catch ( error )
+        {
+            this.handleError( error, 'getAllUsers' )
         }
     }
 
