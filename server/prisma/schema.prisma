@@ -17,8 +17,10 @@ enum UserStatus {
   INACTIVE
   BANNED
 }
+
 enum Role {
-  USER
+  EMPLOYEE
+  MANAGER
   ADMIN
 }
 
@@ -30,29 +32,32 @@ model User {
   password     String     @map("password") @db.VarChar(255)
   refreshToken String?    @unique @map("refresh_token") @db.VarChar(255)
   status       UserStatus @default(ACTIVE) @map("status")
-  role         Role       @default(USER) @map("role")
+  role         Role       @default(EMPLOYEE) @map("role")
   createdAt    DateTime   @default(now()) @map("created_at")
   updatedAt    DateTime   @updatedAt @map("updated_at")
-  customers    Customer?
 
+  @@index([role], name: "idx_role") // For role-based filtering
   @@map("users")
 }
 
 model Customer {
   customerId  String     @id @default(cuid()) @map("customer_id")
-  user_id     String     @unique @map("user_id")
-  User        User       @relation(fields: [user_id], references: [userId], onDelete: Cascade, onUpdate: Cascade)
   name        String     @map("name") @db.VarChar(100)
   email       String     @unique @map("email") @db.VarChar(100)
-  phone       String?    @map("phone_no") @db.VarChar(10)
+  phoneNo     String     @unique @map("phone_no") @db.VarChar(10)
+  aadhaarNo   String     @unique @map("aadhaar_no") @db.VarChar(12)
+  panNo       String     @unique @map("pan_no") @db.VarChar(10)
   dateOfBirth DateTime   @map("date_of_birth")
+  pinCode     String     @map("pin_code") @db.VarChar(6)
+  address     String     @map("address") @db.Text
+  branchName  String     @map("branch_name") @db.VarChar(100)
   status      UserStatus @default(ACTIVE) @map("status")
   createdAt   DateTime   @default(now()) @map("created_at")
   updatedAt   DateTime   @updatedAt @map("updated_at")
   accounts    Accounts[]
 
-  @@index([user_id], name: "idx_user_id")
-  @@index([dateOfBirth], name: "idx_date_of_birth")
+  @@index([dateOfBirth], name: "idx_date_of_birth") // For age-based queries
+  @@index([branchName], name: "idx_branch_name") // For branch-based filtering
   @@map("customers")
 }
 
@@ -76,7 +81,7 @@ model Accounts {
   Customer      Customer      @relation(fields: [customerId], references: [customerId], onDelete: Cascade, onUpdate: Cascade)
   accountType   AccountType   @map("account_type")
   status        AccountStatus @default(ACTIVE) @map("status")
-  balance       Decimal       @default(0) @map("balance") @db.Decimal(19, 4)
+  
   createdAt     DateTime      @default(now()) @map("created_at")
   updatedAt     DateTime      @updatedAt @map("updated_at")
 

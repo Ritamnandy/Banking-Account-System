@@ -10,6 +10,7 @@ import { BullModule } from '@nestjs/bullmq';
 import type { RedisService } from './redis/redis.service.js';
 import { AccountsModule } from './accounts/accounts.module.js';
 import { UserModule } from './user/user.module';
+import { CustomersModule } from './customers/customers.module';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -44,7 +45,11 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
 
 
-    UserModule
+    UserModule,
+
+
+
+    CustomersModule
   ],
   controllers: [],
   providers: [],

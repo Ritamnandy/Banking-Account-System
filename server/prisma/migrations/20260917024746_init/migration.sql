@@ -2,7 +2,7 @@
 CREATE TYPE "UserStatus" AS ENUM ('ACTIVE', 'INACTIVE', 'BANNED');
 
 -- CreateEnum
-CREATE TYPE "Role" AS ENUM ('USER', 'ADMIN');
+CREATE TYPE "Role" AS ENUM ('EMPLOYEE', 'MANAGER', 'ADMIN');
 
 -- CreateEnum
 CREATE TYPE "AccountStatus" AS ENUM ('ACTIVE', 'INACTIVE', 'CLOSED');
@@ -28,7 +28,7 @@ CREATE TABLE "users" (
     "password" VARCHAR(255) NOT NULL,
     "refresh_token" VARCHAR(255),
     "status" "UserStatus" NOT NULL DEFAULT 'ACTIVE',
-    "role" "Role" NOT NULL DEFAULT 'USER',
+    "role" "Role" NOT NULL DEFAULT 'EMPLOYEE',
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -38,11 +38,15 @@ CREATE TABLE "users" (
 -- CreateTable
 CREATE TABLE "customers" (
     "customer_id" TEXT NOT NULL,
-    "user_id" TEXT NOT NULL,
     "name" VARCHAR(100) NOT NULL,
     "email" VARCHAR(100) NOT NULL,
-    "phone_no" VARCHAR(10),
+    "phone_no" VARCHAR(10) NOT NULL,
+    "aadhaar_no" VARCHAR(12) NOT NULL,
+    "pan_no" VARCHAR(10) NOT NULL,
     "date_of_birth" TIMESTAMP(3) NOT NULL,
+    "pin_code" VARCHAR(6) NOT NULL,
+    "address" TEXT NOT NULL,
+    "branch_name" VARCHAR(100) NOT NULL,
     "status" "UserStatus" NOT NULL DEFAULT 'ACTIVE',
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
@@ -57,7 +61,6 @@ CREATE TABLE "accounts" (
     "customer_id" TEXT NOT NULL,
     "account_type" "AccountType" NOT NULL,
     "status" "AccountStatus" NOT NULL DEFAULT 'ACTIVE',
-    "balance" DECIMAL(19,4) NOT NULL DEFAULT 0,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -97,16 +100,25 @@ CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 CREATE UNIQUE INDEX "users_refresh_token_key" ON "users"("refresh_token");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "customers_user_id_key" ON "customers"("user_id");
+CREATE INDEX "idx_role" ON "users"("role");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "customers_email_key" ON "customers"("email");
 
 -- CreateIndex
-CREATE INDEX "idx_user_id" ON "customers"("user_id");
+CREATE UNIQUE INDEX "customers_phone_no_key" ON "customers"("phone_no");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "customers_aadhaar_no_key" ON "customers"("aadhaar_no");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "customers_pan_no_key" ON "customers"("pan_no");
 
 -- CreateIndex
 CREATE INDEX "idx_date_of_birth" ON "customers"("date_of_birth");
+
+-- CreateIndex
+CREATE INDEX "idx_branch_name" ON "customers"("branch_name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "accounts_account_number_key" ON "accounts"("account_number");
@@ -137,9 +149,6 @@ CREATE INDEX "idx_transaction_id" ON "transaction_entries"("transaction_id");
 
 -- CreateIndex
 CREATE INDEX "idx_account_id" ON "transaction_entries"("account_id");
-
--- AddForeignKey
-ALTER TABLE "customers" ADD CONSTRAINT "customers_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "accounts" ADD CONSTRAINT "accounts_customer_id_fkey" FOREIGN KEY ("customer_id") REFERENCES "customers"("customer_id") ON DELETE CASCADE ON UPDATE CASCADE;
