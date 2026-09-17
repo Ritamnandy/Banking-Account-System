@@ -24,8 +24,7 @@ export class RegisterDto
     @IsStrongPassword()
     password!: string;
 
-    @IsOptional()
-    @IsString()
+    @IsOptional() 
     @IsEnum( Role )
     role: Role;
 }
