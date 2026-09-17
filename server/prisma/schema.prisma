@@ -19,8 +19,7 @@ enum UserStatus {
 }
 
 enum Role {
-  EMPLOYEE
-  MANAGER
+  EMPLOYEE 
   ADMIN
 }
 
