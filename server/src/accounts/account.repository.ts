@@ -51,16 +51,16 @@ export class AccountRepository
         );
     }
 
-    async createAccount ( data: CreateAccountDto, customerId: string, accountNumber: string )
+    async createAccount ( data: CreateAccountDto,  accountNumber: string )
     {
         try
         {
             return await this.prisma.accounts.create( {
                 data: {
                     accountNumber,
-                    customerId,
+                    customerId: data.customerId,
                     accountType: data.accountType,
-                    balance: data.balance,
+
                 },
                 select: {
                     accountId: true,
