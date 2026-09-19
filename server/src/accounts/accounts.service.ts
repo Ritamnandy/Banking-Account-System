@@ -18,7 +18,7 @@ export class AccountsService
   async create ( createAccountDto: CreateAccountDto, customerId: string )
   {
     const accountNumber = generateAccountNumber()
-    return this.accountRepository.createAccount( createAccountDto, customerId, accountNumber, )
+    return this.accountRepository.createAccount( createAccountDto, accountNumber )
   }
 
   async setBalance ( accountId: string, balance: number )
