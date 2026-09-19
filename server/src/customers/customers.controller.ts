@@ -33,7 +33,11 @@ export class CustomersController
   @Roles( Role.EMPLOYEE, Role.ADMIN )
   async findAll ()
   {
-    return await this.customersService.findAll();
+    const response = await this.customersService.findAll();
+    return {
+      message: 'Customers retrieved successfully',
+      customers: response
+    };
   }
 
   @Get( ':id' )
@@ -49,7 +53,11 @@ export class CustomersController
   @Roles( Role.EMPLOYEE, Role.ADMIN )
   async update ( @Param( 'id' ) id: string, @Body() updateCustomerDto: UpdateCustomerDto )
   {
-    return await this.customersService.update( id, updateCustomerDto );
+    const response = await this.customersService.update( id, updateCustomerDto );
+    return {
+      message: 'Customer updated successfully',
+      customer: response
+    };
   }
 
   @Delete( ':id' )
@@ -68,12 +76,12 @@ export class CustomersController
     return this.customersService.setCustomerStatus( id, status );
   }
 
-  @Patch( 'inactive' )
+  @Patch( 'inactive/:id' )
   @HttpCode( HttpStatus.OK )
   @Roles( Role.ADMIN, Role.EMPLOYEE )
-  deactivate ( @Body() ids: string )
+  deactivate ( @Param( 'id' ) id: string )
   {
-    return this.customersService.inActiveCustomer( ids );
+    return this.customersService.inActiveCustomer( id );
   }
 
   @Get( 'status' )
@@ -85,3 +93,4 @@ export class CustomersController
   }
 
 }
+
