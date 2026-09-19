@@ -1,11 +1,11 @@
-import { IsDecimal, IsEnum, IsNotEmpty, IsString } from "class-validator";
+import { IsEnum, IsNotEmpty, IsString } from "class-validator";
 import { AccountType } from "../constants.js";
 
 export class CreateAccountDto
 {
     @IsNotEmpty()
-    @IsDecimal()
-    balance:number
+    @IsString()
+    customerId: string
 
     @IsNotEmpty()
     @IsString()
