@@ -8,11 +8,11 @@ import { ConfigService } from '@nestjs/config';
 import { AuthguardsGuard } from './authguards/authguards.guard.js';
 import { RedisModule } from '../redis/redis.module.js';
 import { MailModule } from '../mail/mail.module.js';
-import { AuthRepository } from '../repositories/auth.repository.js';
 import { RoleGuard } from './role/role.guard.js';
+import { AuthRepository } from './repository/auth.repository.js';
 
 @Module( {
-  imports: [ PrismaModule, RedisModule, MailModule, AuthRepository ],
+  imports: [ PrismaModule, RedisModule, MailModule ],
   providers: [ AuthService, JwtService, ConfigService, AuthguardsGuard, AuthRepository ],
   controllers: [ AuthController ],
   exports: [ AuthguardsGuard, RoleGuard ]
